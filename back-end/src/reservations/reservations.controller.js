@@ -148,6 +148,19 @@ const reservationExists = async (req, res, next) => {
   });
 };
 
+const validMobileNumber = (req, res, next) => {
+  var regex = /^[0-9\-]+$/;
+
+  if (regex.test(req.body.data.mobile_number)) {
+    return next();
+  } else {
+    next({
+      status: 400,
+      message: `Invalid mobile number`,
+    });
+  }
+}
+
 //CRUD
 async function list(req, res) {
   const { date, mobile_number } = req.query;
@@ -193,6 +206,7 @@ module.exports = {
   list: asyncErrorBoundary(list),
   create: [
     asyncErrorBoundary(isValidReservation),
+    validMobileNumber,
     isNotOnTuesday,
     isInTheFuture,
     isWithinOpenHours,
@@ -208,6 +222,7 @@ module.exports = {
   ],
   modify: [
     isValidReservation,
+    validMobileNumber,
     isNotOnTuesday,
     isInTheFuture,
     isWithinOpenHours,
